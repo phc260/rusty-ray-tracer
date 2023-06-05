@@ -1,35 +1,34 @@
 extern crate glam;
 
 use glam::{DVec3};
-
+use rand::Rng;
+use std::f64::consts::PI;
 type Color3=DVec3;
 
 use crate::raytracer::ray::{HitRecord, Ray};
-use rand::Rng;
 
-use std::f64::consts::PI;
 
 fn rand_in_unit_sphere() -> DVec3 {
     let mut rng = rand::thread_rng();
     let radius: f64 = rng.gen_range(0.0..1.0);
     let theta: f64 = rng.gen_range(0.0..PI);
     let phi: f64 = rng.gen_range(-PI..PI);
-    DVec3::new(
-        radius * theta.sin() * phi.cos(),
-        radius * theta.sin() * phi.sin(),
-        radius * theta.cos(),
-    )
+    DVec3 {
+        x: radius * theta.sin() * phi.cos(),
+        y: radius * theta.sin() * phi.sin(),
+        z: radius * theta.cos(),
+    }
 }
 
 fn rand_unit_vector() -> DVec3 {
     let mut rng = rand::thread_rng();
     let theta: f64 = rng.gen_range(0.0..PI);
     let phi: f64 = rng.gen_range(-PI..PI);
-    DVec3::new(
-       theta.sin() * phi.cos(),
-       theta.sin() * phi.sin(),
-       theta.cos(), 
-    )
+    DVec3 {
+       x: theta.sin() * phi.cos(),
+       y: theta.sin() * phi.sin(),
+       z: theta.cos(), 
+    }
 }
 
 fn reflect(v: &DVec3, n: &DVec3) -> DVec3 {

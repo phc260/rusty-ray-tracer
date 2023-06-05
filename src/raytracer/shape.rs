@@ -55,20 +55,32 @@ impl Hittable for Sphere {
     }
 }
 
-pub struct World {
-    pub components: Vec<Sphere>,
-}
+
+pub type World = Vec<Shape>;
 
 impl Hittable for World {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut closest = t_max;
         let mut hitrec = None;
-        for obj in self.components.iter() {
+        for obj in self.iter() {
             if let Some(hit) = obj.hit(ray, t_min, closest) {
                 closest = hit.t;
                 hitrec = Some(hit);
             }
         }
         hitrec
+    }
+}
+
+
+pub enum Shape {
+    Sphere(Sphere),
+}
+
+impl Hittable for Shape {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+        match self {
+            Shape::Sphere(s) => s.hit(ray, t_min, t_max),
+        }
     }
 }
