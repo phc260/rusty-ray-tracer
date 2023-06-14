@@ -1,19 +1,17 @@
 mod raytracer;
 
-extern crate image;
-extern crate glam;
-
-use glam::{DVec3};
-use rand::Rng;
+use image;
+use glam::DVec3;
 
 type Color3 = DVec3;
 
-use crate::raytracer::camera::Camera;
-use crate::raytracer::material::{Lambertian, Metal, Dieletric, Material, Scatterable};
-use crate::raytracer::ray::{Ray};
-use crate::raytracer::shape::{Shape, Hittable, Sphere, World};
+use raytracer::camera::Camera;
+use raytracer::material::{Lambertian, Metal, Dieletric, Material, Scatterable};
+use raytracer::ray::*;
+use raytracer::shape::{Shape, Hittable, Sphere, World};
+use raytracer::utils::*;
 
-use indicatif::{ProgressBar, ProgressStyle};
+use rand::Rng;
 use rand::distributions::{Distribution, Uniform};
 use rayon::prelude::*;
 
@@ -27,7 +25,7 @@ fn ray_color(ray: &Ray, world: &World, depth: u16) -> Color3 {
         let (scattered, attenuation) = hitrec.material.scatter(ray, &hitrec);
         return attenuation * ray_color(&scattered, world, depth-1);
     }
-    
+
     let t = 0.5*(ray.direction.y + 1.0);
     return (1.0-t)*Color3::new(1.0, 1.0, 1.0) + t*Color3::new(0.5, 0.7, 1.0);
 }
@@ -186,23 +184,17 @@ fn main() {
     let focal_length: f64 = 10.0;
 
     let cam = Camera::new(
-                    DVec3::new(13.0, 2.0, 3.0),
-                    DVec3::new(0.0, 0.0, 0.0),
-                    DVec3::new(0.0, 1.0, 0.0),
-                    20.0,
-                    aspect_ratio,
-                    0.01,
-                    focal_length);
+        DVec3::new(13.0, 2.0, 3.0),
+        DVec3::new(0.0, 0.0, 0.0),
+        DVec3::new(0.0, 1.0, 0.0),
+        20.0,
+        aspect_ratio,
+        0.01,
+        focal_length);
 
     let world = random_scene();
 
-    let pbar = ProgressBar::new(image_height.into());
-    pbar.set_style(
-        ProgressStyle::with_template(
-            "{spinner:.green} [{elapsed_precise}]\
-            [{wide_bar:.cyan/blue}] {percent}% ({eta})")
-        .unwrap()
-        .progress_chars("#>-"));
+    let pbar = get_progress_bar(image_height.into());
 
     let bufffer: Vec<u8> = (0..image_height).into_par_iter().rev().map(|j|{
         let row: Vec<u8> = (0..image_width).into_par_iter().map(|i|{

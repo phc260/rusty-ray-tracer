@@ -3,13 +3,17 @@ name = "rusty-ray-tracer"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "book1_random_scene"
+path = "src/book1_random_scene.rs"
+
 # [[bin]]
-# name = "random_scene"
-# path = "src/random_scene.rs"
+# name = "book2_final_scene"
+# path = "src/book2_final_scene.rs"
 
 [dependencies]
 glam = "0.24.0"
 image = "0.24.6"
-indicatif = "0.17.3"
+indicatif = "0.17.5"
 rand = "0.8.5"
 rayon = "1.7.0"
